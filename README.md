@@ -1,7 +1,5 @@
 # POS Project (Student Project)
 
-## ภาษาไทย
-
 ยินดีต้อนรับสู่ **Project POS สำหรับนักศึกษาปี 1**
 
 โปรเจกต์นี้เป็นส่วนหนึ่งของการเรียนรู้การพัฒนาโปรแกรมพื้นฐาน
@@ -28,8 +26,6 @@
 ```
 
 ---
-
-## English
 
 Welcome to the **POS Project for First-Year Students**
 
