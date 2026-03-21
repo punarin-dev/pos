@@ -59,40 +59,6 @@ POS/
 
 ---
 
-## ⚙️ Installation (วิธีติดตั้ง)
-
-### 1. Clone โปรเจกต์
-
-```bash id="3y4p2f"
-git clone https://github.com/your-username/POS.git
-cd POS
-```
-
-### 2. (แนะนำ) สร้าง Virtual Environment
-
-```bash id="4t8l6c"
-python -m venv venv
-source venv/bin/activate   # (Linux / Mac)
-venv\Scripts\activate      # (Windows)
-```
-
-### 3. ติดตั้ง Dependencies (ถ้ามี)
-
-```bash id="l2m8qd"
-pip install -r requirements.txt
-```
-
----
-
-## ▶ วิธีใช้งาน (Usage)
-
-รันโปรแกรมด้วยคำสั่ง:
-
-```bash id="b7x9ka"
-python main.py
-```
-
-
 ## แนวคิดที่ใช้ในโปรเจกต์
 
 โปรเจกต์นี้ใช้แนวคิด **Event-Driven Programming** เช่น:
