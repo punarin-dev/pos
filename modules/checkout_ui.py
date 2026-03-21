@@ -37,14 +37,14 @@ class CheckoutWindow:
         frame_address.pack(fill="x", padx=10, pady=5)
 
         # แถว 0: เพศ (Radio Buttons) ย้ายขึ้นมาไว้บนสุด
-        tk.Label(frame_address, text="เพศ:").grid(row=0, column=0, sticky="w", pady=2)
+        tk.Label(frame_address, text="คำนำหน้า:").grid(row=0, column=0, sticky="w", pady=2)
         
-        self.gender_var = tk.StringVar(value="ชาย")
+        self.gender_var = tk.StringVar(value="นาย")
         frame_gender = tk.Frame(frame_address)
         frame_gender.grid(row=0, column=1, columnspan=3, sticky="w", pady=2)
         
-        tk.Radiobutton(frame_gender, text="ชาย", variable=self.gender_var, value="ชาย").pack(side="left", padx=(0, 10))
-        tk.Radiobutton(frame_gender, text="หญิง", variable=self.gender_var, value="หญิง").pack(side="left", padx=(0, 10))
+        tk.Radiobutton(frame_gender, text="นาย", variable=self.gender_var, value="นาย").pack(side="left", padx=(0, 10))
+        tk.Radiobutton(frame_gender, text="นางสาว", variable=self.gender_var, value="นางสาว").pack(side="left", padx=(0, 10))
         tk.Radiobutton(frame_gender, text="อื่นๆ", variable=self.gender_var, value="อื่นๆ").pack(side="left")
 
         # แถว 1: ชื่อ-นามสกุล (ย้ายลงมา)
