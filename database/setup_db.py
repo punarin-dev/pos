@@ -47,10 +47,11 @@ def init_db():
     """)
 
     # หากเพิ่งสร้าง DB ครั้งแรก จะมีข้อมูลเบื้องต้นให้ 2 เล่ม
-    cur.execute("SELECT COUNT(*) FROM books")
-    if cur.fetchone()[0] == 0:
-        cur.execute("INSERT INTO books (isbn, bookname, price, qty) VALUES ('9781234567890', 'Python Programming', 350, 10)")
-        cur.execute("INSERT INTO books (isbn, bookname, price, qty) VALUES ('9780987654321', 'Database Design', 250, 5)")
-    
-    con.commit()
-    con.close()
+    if __name__ == "__main__":
+        cur.execute("SELECT COUNT(*) FROM books")
+        if cur.fetchone()[0] == 0:
+            cur.execute("INSERT INTO books (isbn, bookname, price, qty) VALUES ('9781234567890', 'Python Programming', 350, 10)")
+            cur.execute("INSERT INTO books (isbn, bookname, price, qty) VALUES ('9780987654321', 'Database Design', 250, 5)")
+        
+        con.commit()
+        con.close()
