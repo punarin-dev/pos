@@ -1,54 +1,120 @@
-# POS Project (Student Project)
+# BookShopOffline
 
-ยินดีต้อนรับสู่ **Project POS สำหรับนักศึกษาปี 1**
+โปรเจกต์ พัฒนาด้วยภาษา Python โดยใช้ Tkinter สำหรับส่วนติดต่อผู้ใช้ (GUI) และ SQLite สำหรับจัดเก็บข้อมูล
 
-โปรเจกต์นี้เป็นส่วนหนึ่งของการเรียนรู้การพัฒนาโปรแกรมพื้นฐาน
-โดยเครื่องมือและเนื้อหาการเรียนการสอนมีเป้าหมายให้สร้างแอปพลิเคชัน POS อย่างง่าย
+📌 **โปรเจกต์นี้เป็นส่วนหนึ่งของการเรียนระดับมหาวิทยาลัย ชั้นปีที่ 1**
+เพื่อศึกษาแนวคิดการเขียนโปรแกรมแบบ **Event-Driven Programming (การเขียนโปรแกรมที่ตอบสนองต่อเหตุการณ์)**
 
-เครื่องมือที่ใช้ในโปรเจกต์นี้
+---
 
-* ใช้ **Python** เป็นภาษาในการพัฒนา
-* ใช้ **Tkinter** สำหรับสร้างหน้าตาโปรแกรม (GUI)
-* ใช้ **SQLite** เป็นฐานข้อมูล
-* ใช้ Python สำหรับเชื่อมต่อและจัดการฐานข้อมูล
+## วัตถุประสงค์ของโปรเจกต์
 
-โปรเจกต์นี้มีจุดประสงค์เพื่อฝึก
+* เรียนรู้การพัฒนา GUI ด้วย Tkinter
+* เข้าใจการทำงานของ Event เช่น การคลิกปุ่ม การเลือกข้อมูล
+* ฝึกออกแบบโครงสร้างโปรแกรมเบื้องต้น
+* เรียนรู้การเชื่อมต่อฐานข้อมูลด้วย SQLite
 
-* การเขียนโปรแกรม Python
-* การสร้าง GUI ด้วย Tkinter
-* การเชื่อมต่อฐานข้อมูล
-* การออกแบบ Logic ของโปรแกรม
+---
 
-### สถานะโปรเจกต์
+## Features (ความสามารถหลัก)
 
-```
-กำลังพัฒนา (Work in Progress)
+* ระบบขายสินค้า
+* จัดการสินค้า (เพิ่ม / ลบ / แก้ไข)
+* เพิ่มสินค้าลงตะกร้า
+* คำนวณราคารวมอัตโนมัติ
+* แสดงข้อมูลในรูปแบบตาราง (Treeview)
+* บันทึกข้อมูลลงฐานข้อมูล SQLite
+* บันทึกข้อมูลสำหรับใช้จัดส่ง
+---
+
+## Tech Stack
+
+* Python 3.x
+* Tkinter (GUI)
+* SQLite3 (Database)
+
+---
+
+## 📁 Project Structure
+
+```id="z7r3kd"
+POS/
+│
+├── main.py                 # ไฟล์หลักสำหรับรันโปรแกรม
+├── database/               # สร้างและจัดการฐานข้อมูล
+│   ├── init.py
+│   ├── controller.py
+│   └── setup_db.py
+│
+├── images/                 # รูปภาพ / ไอคอน
+│       
+├── modules/                # เก็บฟังก์ชันการจัดการในโปรแกรม
+│   ├── cart_manager.py
+│   └── checkout_ui.py
+│
+├── ui/                     # ส่วน UI
+│   └── app.py/
 ```
 
 ---
 
-Welcome to the **POS Project for First-Year Students**
+## ⚙️ Installation (วิธีติดตั้ง)
 
-This project is part of a learning exercise to build a simple POS (Point of Sale) application.
+### 1. Clone โปรเจกต์
 
-The learning objective is to practice building a desktop application using basic Python tools.
-
-Technologies used in this project:
-
-* **Python** for programming
-* **Tkinter** for building the graphical user interface (GUI)
-* **SQLite** for the database
-* Python for connecting and managing the database
-
-This project is designed to help students practice:
-
-* Python programming
-* Building GUI applications with Tkinter
-* Database integration
-* Basic application logic design
-
-### Project Status
-
+```bash id="3y4p2f"
+git clone https://github.com/your-username/POS.git
+cd POS
 ```
-Work in Progress
+
+### 2. (แนะนำ) สร้าง Virtual Environment
+
+```bash id="4t8l6c"
+python -m venv venv
+source venv/bin/activate   # (Linux / Mac)
+venv\Scripts\activate      # (Windows)
 ```
+
+### 3. ติดตั้ง Dependencies (ถ้ามี)
+
+```bash id="l2m8qd"
+pip install -r requirements.txt
+```
+
+---
+
+## ▶ วิธีใช้งาน (Usage)
+
+รันโปรแกรมด้วยคำสั่ง:
+
+```bash id="b7x9ka"
+python main.py
+```
+
+
+## แนวคิดที่ใช้ในโปรเจกต์
+
+โปรเจกต์นี้ใช้แนวคิด **Event-Driven Programming** เช่น:
+
+* การกดปุ่ม (Button Click)
+* การเลือกข้อมูลจากตาราง (Treeview Select)
+* การอัปเดตข้อมูลแบบ Real-time
+
+โดยแต่ละ Event จะมีฟังก์ชัน (Handler) ทำหน้าที่ตอบสนองต่อเหตุการณ์นั้น ๆ
+
+---
+
+## Future Improvements
+
+* ระบบ Login
+* ออกใบเสร็จ
+* รายงานยอดขาย
+* ปรับปรุง UI ให้ทันสมัย
+
+---
+
+## ผู้พัฒนา
+นาย ภูนริน วงศ์อินตา
+นางสาว จินต์สินี เกิดลาภ
+โปรเจกต์นักศึกษา (Student Project)
+พัฒนาเพื่อการศึกษาเท่านั้น

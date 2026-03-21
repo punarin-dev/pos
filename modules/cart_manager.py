@@ -31,7 +31,7 @@ class CartManager:
                 self.items[book_id]['qty'] += 1
                 return True, f"เพิ่ม '{name}' ลงตะกร้าแล้ว"
             else:
-                return False, f"ไม่สามารถเพิ่มได้ สินค้ามีจำนวนจำกัดแค่ {stock} ชิ้น"
+                return False, f"สินค้ามีจำนวน {stock} ชิ้น"
         else:
             # กรณีที่สินค้านี้ยังไม่มีในตะกร้า
             if stock > 0:
@@ -66,7 +66,7 @@ class CartManager:
                 return True, ""
             else:
                 max_st = self.items[book_id]['max_stock']
-                return False, f"ไม่สามารถเพิ่มได้ จำนวนเกินสต็อกที่มี ({max_st} ชิ้น)!"
+                return False, f"ไม่สามารถเพิ่มเกินจำนวน ({max_st} ชิ้น)"
         return False, "ไม่พบสินค้า"
     
     def decrease_item(self, book_id):

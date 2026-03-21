@@ -22,7 +22,7 @@ class BookstoreApp:
             root (tk.Tk): หน้าต่างหลักของ Tkinter
         """
         self.root = root
-        self.root.title("Tales on Shelf - ร้านหนังสือออนไลน์")
+        self.root.title("BookShop Online")
         self.root.geometry("1000x700")
         
         self.cart_manager = CartManager()
@@ -43,10 +43,10 @@ class BookstoreApp:
         
         # หมวดหมู่เมนูจัดการข้อมูล
         manage_menu = tk.Menu(menubar, tearoff=0)
-        manage_menu.add_command(label="➕ เพิ่มหนังสือและรูปภาพ", command=self.open_add_book_window)
-        manage_menu.add_command(label="📦 จัดการเพิ่ม/ลดสต็อก", command=self.open_manage_stock_window)
+        manage_menu.add_command(label="เพิ่มหนังสือและรูปภาพ", command=self.open_add_book_window)
+        manage_menu.add_command(label="จัดการสต็อกสินค้า", command=self.open_manage_stock_window)
         
-        menubar.add_cascade(label="⚙️ จัดการข้อมูล (Menu)", menu=manage_menu)
+        menubar.add_cascade(label="จัดการข้อมูล", menu=manage_menu)
         self.root.config(menu=menubar)
 
     def create_widgets(self):
@@ -148,12 +148,6 @@ class BookstoreApp:
     def add_to_cart(self, b_id, name, price, stock):
         """
         เพิ่มสินค้าลงในตะกร้าและตรวจสอบจำนวนสต็อก
-        
-        Args:
-            b_id (int): ID สินค้า
-            name (str): ชื่อหนังสือ
-            price (float): ราคาต่อชิ้น
-            stock (int): สต็อกที่เหลืออยู่
         """
         success, msg = self.cart_manager.add_item(b_id, name, price, stock)
         if success:
@@ -166,7 +160,8 @@ class BookstoreApp:
         """เพิ่มจำนวนสินค้าในตะกร้า +1 (ตรวจสอบสต็อกสูงสุดเสมอ)"""
         item = self.get_selected_cart_item()
         if item:
-            success, msg = self.cart_manager.increase_item(item[0]) # ส่ง ID ไปเช็ค
+            # ใช้ index 1 เพราะคอลัมน์ 0 เป็น Checkbox ไปแล้ว
+            success, msg = self.cart_manager.increase_item(item[1]) 
             if success:
                 self.refresh_cart_display()
             else:
@@ -177,7 +172,7 @@ class BookstoreApp:
     def open_add_book_window(self):
         """เปิดหน้าต่าง Pop-up สำหรับเพิ่มข้อมูลหนังสือและอัปโหลดรูปภาพใหม่"""
         top = tk.Toplevel(self.root)
-        top.title("เพิ่มหนังสือใหม่")
+        top.title("เพิ่มหนังสือ")
         top.geometry("400x350")
         
         # ฟอร์มรับข้อมูล
@@ -201,15 +196,15 @@ class BookstoreApp:
 
         def select_image():
             """เปิดหน้าต่าง File Dialog ให้ผู้ใช้เลือกรูปภาพ (เฉพาะ .png)"""
-            filepath = filedialog.askopenfilename(title="เลือกรูปปกหนังสือ", filetypes=[("PNG Files", "*.png")])
+            filepath = filedialog.askopenfilename(title="เลือกปกหนังสือ", filetypes=[("PNG Files", "*.png")])
             if filepath:
                 self.selected_image_path = filepath
-                lbl_img_path.config(text="เลือกรูปภาพแล้ว ✅", fg="green")
+                lbl_img_path.config(text="เลือกรูปภาพแล้ว", fg="green")
 
-        lbl_img_path = tk.Label(top, text="ยังไม่ได้เลือกรูป (แนะนำไฟล์ .png)", fg="gray")
+        lbl_img_path = tk.Label(top, text="ยังไม่ได้เลือกรูป (ไฟล์.png)", fg="gray")
         lbl_img_path.pack(pady=5)
         
-        tk.Button(top, text="🖼️ เลือกรูปภาพปก", command=select_image).pack(pady=5)
+        tk.Button(top, text="เลือกรูปภาพปก", command=select_image).pack(pady=5)
 
         def save_book():
             """ดำเนินการบันทึกข้อมูลหนังสือใหม่และจัดการรูปภาพลงระบบ"""
@@ -234,27 +229,27 @@ class BookstoreApp:
                     dest_path = f"images/{isbn}.png"
                     shutil.copy(self.selected_image_path, dest_path)
 
-                messagebox.showinfo("สำเร็จ", "เพิ่มหนังสือและรูปภาพสำเร็จ!")
+                messagebox.showinfo("สำเร็จ", "เพิ่มสินค้าสำเร็จ")
                 self.load_books_to_home() # รีเฟรชหน้าแรก
                 top.destroy()
 
             except ValueError:
-                messagebox.showerror("Error", "ราคาหรือจำนวนสต๊อกต้องเป็นตัวเลขเท่านั้น")
+                messagebox.showerror("Error", "ข้อมูลไม่ถูกต้อง")
 
-        tk.Button(top, text="💾 บันทึกข้อมูล", bg="#4CAF50", fg="white", command=save_book).pack(pady=15)
+        tk.Button(top, text="บันทึกข้อมูล", bg="#4CAF50", fg="white", command=save_book).pack(pady=15)
     
     # ================== หน้าต่างจัดการข้อมูล สต็อก และรูปภาพ ==================
     
     def open_manage_stock_window(self):
         """เปิดหน้าต่าง Pop-up สำหรับอัปเดตสต็อก แก้ไขชื่อ และเปลี่ยนรูปภาพหนังสือ"""
         top = tk.Toplevel(self.root)
-        top.title("จัดการข้อมูล สต็อก และรูปภาพสินค้า")
+        top.title("Stock Manager")
         top.geometry("600x450")
         
         # ตารางแสดงรายการหนังสือ
         columns = ("id", "isbn", "name", "qty")
         tree = ttk.Treeview(top, columns=columns, show="headings", height=8)
-        for col, text in zip(columns, ["ID", "ISBN", "ชื่อหนังสือ", "สต็อกปัจจุบัน"]):
+        for col, text in zip(columns, ["ID", "ISBN", "ชื่อหนังสือ", "จำนวน"]):
             tree.heading(col, text=text)
             
         tree.column("id", width=50, anchor="center")
@@ -274,7 +269,7 @@ class BookstoreApp:
         load_stock_data()
 
         # --- พื้นที่สำหรับแก้ไขข้อมูล ---
-        frame_edit = tk.LabelFrame(top, text="แก้ไขข้อมูลและรูปภาพ", padx=10, pady=10)
+        frame_edit = tk.LabelFrame(top, text="แก้ไขข้อมูลสินค้า", padx=10, pady=10)
         frame_edit.pack(fill="x", padx=15, pady=5)
 
         tk.Label(frame_edit, text="ชื่อสินค้าใหม่:").grid(row=0, column=0, sticky="e", pady=5)
@@ -287,7 +282,7 @@ class BookstoreApp:
 
         # --- ส่วนเปลี่ยนรูปภาพ ---
         self.edit_image_path = None
-        lbl_edit_img = tk.Label(frame_edit, text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องกด)", fg="gray")
+        lbl_edit_img = tk.Label(frame_edit, text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องเลือก)", fg="gray")
         lbl_edit_img.grid(row=2, column=1, sticky="w", padx=5)
 
         def select_new_image():
@@ -295,9 +290,9 @@ class BookstoreApp:
             filepath = filedialog.askopenfilename(title="เลือกรูปปกหนังสือใหม่", filetypes=[("PNG Files", "*.png")])
             if filepath:
                 self.edit_image_path = filepath
-                lbl_edit_img.config(text="เลือกรูปภาพใหม่แล้ว ✅", fg="green")
+                lbl_edit_img.config(text="เลือกรูปภาพใหม่แล้ว", fg="green")
 
-        tk.Button(frame_edit, text="🖼️ เปลี่ยนรูปภาพ", command=select_new_image).grid(row=2, column=0, sticky="e", pady=5)
+        tk.Button(frame_edit, text="เปลี่ยนรูปภาพ", command=select_new_image).grid(row=2, column=0, sticky="e", pady=5)
 
         def on_tree_select(event):
             """จัดการเหตุการณ์เมื่อมีการคลิกเลือกแถวในตาราง"""
@@ -312,7 +307,7 @@ class BookstoreApp:
                 
                 # ล้างค่าการเลือกรูปภาพทุกครั้งที่คลิกเปลี่ยนหนังสือ
                 self.edit_image_path = None
-                lbl_edit_img.config(text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องกด)", fg="gray")
+                lbl_edit_img.config(text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องเลือก)", fg="gray")
 
         tree.bind("<<TreeviewSelect>>", on_tree_select)
 
@@ -320,7 +315,7 @@ class BookstoreApp:
             """บันทึกการเปลี่ยนแปลงทั้งหมด (ชื่อ, สต็อก, รุปภาพ) ลงฐานข้อมูลและระบบไฟล์"""
             selected = tree.focus()
             if not selected:
-                messagebox.showwarning("แจ้งเตือน", "กรุณาคลิกเลือกหนังสือจากตารางด้านบนก่อน", parent=top)
+                messagebox.showwarning("แจ้งเตือน", "กรุณาคลิกเลือกหนังสือ", parent=top)
                 return
                 
             item = tree.item(selected)["values"]
@@ -334,7 +329,7 @@ class BookstoreApp:
                 return
 
             if not new_qty_str.isdigit() or int(new_qty_str) < 0:
-                messagebox.showerror("ข้อผิดพลาด", "กรุณากรอกจำนวนสต็อกเป็นตัวเลขจำนวนเต็มบวก", parent=top)
+                messagebox.showerror("ข้อผิดพลาด", "จำนวนไม่ถูกต้อง", parent=top)
                 return
             
             new_qty = int(new_qty_str)
@@ -347,7 +342,7 @@ class BookstoreApp:
                     dest_path = f"images/{isbn}.png"
                     shutil.copy(self.edit_image_path, dest_path)
 
-                messagebox.showinfo("สำเร็จ", "อัปเดตข้อมูล สต็อก และรูปภาพสำเร็จ!", parent=top)
+                messagebox.showinfo("สำเร็จ", "อัปเดตข้อมูลสำเร็จ", parent=top)
                 load_stock_data() 
                 self.load_books_to_home() # รีเฟรชหน้าแรก เพื่อให้รูปใหม่/ชื่อใหม่โชว์ทันที
                 
@@ -355,16 +350,16 @@ class BookstoreApp:
                 ent_name.delete(0, tk.END)
                 ent_qty.delete(0, tk.END)
                 self.edit_image_path = None
-                lbl_edit_img.config(text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องกด)", fg="gray")
+                lbl_edit_img.config(text="ยังไม่ได้เลือกรูปใหม่ (ถ้าไม่ต้องการเปลี่ยนไม่ต้องเลือก)", fg="gray")
             else:
                 messagebox.showerror("ข้อผิดพลาด", msg, parent=top)
 
         tk.Button(
-            frame_edit, text="💾 บันทึกการเปลี่ยนแปลง", bg="#4CAF50", fg="white", 
+            frame_edit, text="บันทึกการเปลี่ยนแปลง", bg="#4CAF50", fg="white", 
             font=("Arial", 10, "bold"), command=save_changes
         ).grid(row=3, column=0, columnspan=2, pady=10)
 
-    # ================== แท็บ 2: ตะกร้า ==================
+    # ================== แท็บ 2: ตะกร้า (แก้ไขระบบเลือกรายการจ่ายเงิน) ==================
 
     def setup_cart_tab(self):
         """จัดเตรียมโครงสร้าง UI สำหรับแท็บตะกร้าสินค้า (ตารางสรุปรายการ และปุ่มจัดการ)"""
@@ -372,22 +367,27 @@ class BookstoreApp:
         action_frame = tk.Frame(self.tab_cart, bg="#f0f0f0")
         action_frame.pack(fill="x", padx=20, pady=(20, 5))
 
-        tk.Button(action_frame, text="➕ เพิ่มจำนวน", width=12, command=self.cart_increase).pack(side="left", padx=5)
-        tk.Button(action_frame, text="➖ ลดจำนวน", width=12, command=self.cart_decrease).pack(side="left", padx=5)
-        tk.Button(action_frame, text="🗑️ ลบรายการ", width=12, bg="#ffcccc", command=self.cart_remove).pack(side="left", padx=5)
+        tk.Button(action_frame, text="เพิ่มจำนวน", width=12, command=self.cart_increase).pack(side="left", padx=5)
+        tk.Button(action_frame, text="ลดจำนวน", width=12, command=self.cart_decrease).pack(side="left", padx=5)
+        tk.Button(action_frame, text="ลบรายการ", width=12, bg="#ffcccc", command=self.cart_remove).pack(side="left", padx=5)
 
-        # ตารางแสดงรายการตะกร้า
-        columns = ("id", "name", "price", "qty", "subtotal")
+        # ตารางแสดงรายการตะกร้า (เพิ่มคอลัมน์ "select" สำหรับคลิก Checkbox เข้ามาด้านหน้าสุด)
+        columns = ("select", "id", "name", "price", "qty", "subtotal")
         self.cart_tree = ttk.Treeview(self.tab_cart, columns=columns, show="headings", height=12)
-        for col, text in zip(columns, ["ID", "ชื่อหนังสือ", "ราคาต่อหน่วย", "จำนวน", "รวม (บาท)"]):
+        
+        for col, text in zip(columns, ["เลือก", "ID", "ชื่อหนังสือ", "ราคาต่อหน่วย", "จำนวน", "รวม (บาท)"]):
             self.cart_tree.heading(col, text=text)
         
+        self.cart_tree.column("select", width=50, anchor="center") # คอลัมน์ที่จำลอง Checkbox
         self.cart_tree.column("id", width=50, anchor="center")
         self.cart_tree.column("name", width=300)
         self.cart_tree.column("price", width=100, anchor="e")
         self.cart_tree.column("qty", width=80, anchor="center")
         self.cart_tree.column("subtotal", width=100, anchor="e")
         self.cart_tree.pack(fill="both", expand=True, padx=20, pady=5)
+
+        # Event: จับการคลิกเมาส์ซ้ายเพื่อสลับสถานะเลือก (☑ และ ☐)
+        self.cart_tree.bind('<ButtonRelease-1>', self.toggle_checkbox)
 
         # ส่วนสรุปยอดและปุ่มจ่ายเงิน
         bottom_frame = tk.Frame(self.tab_cart, bg="#f0f0f0")
@@ -399,60 +399,120 @@ class BookstoreApp:
         btn_checkout = tk.Button(bottom_frame, text="ดำเนินการสั่งซื้อ", bg="#FFD700", font=("Arial", 12, "bold"), command=self.open_checkout)
         btn_checkout.pack(side="right", ipadx=10, ipady=5)
 
+    # --- ฟังก์ชันจัดการ Checkbox และคำนวณยอด ---
+
+    def toggle_checkbox(self, event):
+        """สลับสถานะ ☑ และ ☐ เมื่อคลิกที่คอลัมน์แรก"""
+        region = self.cart_tree.identify_region(event.x, event.y)
+        if region == "cell":
+            column = self.cart_tree.identify_column(event.x)
+            if column == '#1': # ถ้าคลิกที่คอลัมน์ "เลือก"
+                item_id = self.cart_tree.focus()
+                if item_id:
+                    values = list(self.cart_tree.item(item_id, "values"))
+                    # สลับสถานะตัวอักษรเพื่อจำลองการติ๊ก
+                    values[0] = "☐" if values[0] == "☑" else "☑"
+                    self.cart_tree.item(item_id, values=values)
+                    # คำนวณยอดใหม่
+                    self.update_selected_total()
+
+    def update_selected_total(self):
+        """คำนวณยอดเงินรวมเฉพาะรายการที่มีเครื่องหมายติ๊กถูก ☑"""
+        total = 0.0
+        for row in self.cart_tree.get_children():
+            values = self.cart_tree.item(row, "values")
+            if values[0] == "☑": 
+                # ดึงตัวเลข subtotal ลบลูกน้ำออก แล้วแปลงเป็น float มาบวกกัน
+                subtotal = float(values[5].replace(",", ""))
+                total += subtotal
+        
+        self.lbl_total.config(text=f"ยอดรวม: {total:,.2f} บาท")
+
     # --- ฟังก์ชันปุ่มกดในตะกร้า ---
 
     def get_selected_cart_item(self):
-        """
-        ดึงข้อมูลรายการที่ถูกเลือก (Highlight) อยู่ในตารางตะกร้า
-        
-        Returns:
-            list/None: รายการข้อมูล [id, name, price, qty, subtotal] หรือ None หากไม่ได้เลือก
-        """
+        """ดึงข้อมูลรายการที่ถูกกดคลุมดำ (Highlight) อยู่"""
         selected = self.cart_tree.focus()
         if not selected:
-            messagebox.showwarning("แจ้งเตือน", "กรุณาคลิกเลือกรายการในตะกร้าก่อนครับ")
+            messagebox.showwarning("แจ้งเตือน", "กรุณาคลิกเลือกรายการในตารางก่อน")
             return None
         return self.cart_tree.item(selected)["values"] 
 
     def cart_decrease(self):
-        """ลดจำนวนสินค้าในตะกร้าลง 1 ชิ้น (ถ้าเหลือ 0 จะถูกลบออกอัตโนมัติ)"""
+        """ลดจำนวนสินค้าในตะกร้าลง 1 ชิ้น"""
         item = self.get_selected_cart_item()
         if item:
-            self.cart_manager.decrease_item(item[0])
+            self.cart_manager.decrease_item(item[1]) # ค่า ID เลื่อนไปอยู่ index 1
             self.refresh_cart_display()
 
     def cart_remove(self):
-        """ลบรายการสินค้าที่เลือกออกจากตะกร้าทั้งหมด"""
+        """ลบรายการสินค้าออกจากตะกร้า"""
         item = self.get_selected_cart_item()
         if item:
-            if messagebox.askyesno("ยืนยัน", f"ต้องการลบ '{item[1]}' ออกจากตะกร้าหรือไม่?"):
-                self.cart_manager.remove_item(item[0])
+            if messagebox.askyesno("ยืนยัน", f"ต้องการลบ '{item[2]}' ออกจากตะกร้าหรือไม่?"):
+                self.cart_manager.remove_item(item[1]) 
                 self.refresh_cart_display()
 
     def refresh_cart_display(self):
-        """ดึงข้อมูลตะกร้าล่าสุดมาแสดงบนตารางและอัปเดตยอดเงินรวม"""
-        # ล้างข้อมูลเดิมในตารางออก
+        """รีเฟรชตารางตะกร้า โดยจะจดจำรายการที่เคยติ๊กถูกเอาไว้ด้วย"""
+        # 1. จำรายการเดิมที่เคยติ๊ก ☑ เอาไว้ก่อน
+        checked_items = []
+        for row in self.cart_tree.get_children():
+            values = self.cart_tree.item(row, "values")
+            if values[0] == "☑":
+                checked_items.append(str(values[1])) 
+
+        # 2. ล้างตาราง
         for row in self.cart_tree.get_children():
             self.cart_tree.delete(row)
 
-        # แสดงข้อมูลล่าสุด
+        # 3. โชว์ข้อมูลล่าสุด
         for item in self.cart_manager.get_all_items():
             sub = item['price'] * item['qty']
-            self.cart_tree.insert("", "end", values=(item['id'], item['name'], f"{item['price']:,.2f}", item['qty'], f"{sub:,.2f}"))
+            item_id_str = str(item['id'])
+            
+            # ถ้าเป็นสินค้าใหม่ (หรือเคยโดนติ๊กไว้) ให้ค่าตั้งต้นเป็นติ๊กถูก ☑
+            check_mark = "☑" if (item_id_str in checked_items or not checked_items) else "☐"
 
-        total = self.cart_manager.calculate_total()
-        self.lbl_total.config(text=f"ยอดรวม: {total:,.2f} บาท")
+            self.cart_tree.insert("", "end", values=(
+                check_mark, item['id'], item['name'], f"{item['price']:,.2f}", item['qty'], f"{sub:,.2f}"
+            ))
+
+        self.update_selected_total()
 
     def open_checkout(self):
-        """เปิดหน้าต่างดำเนินการสั่งซื้อ (Checkout) เมื่อผู้ใช้กดยืนยัน"""
-        if not self.cart_manager.get_all_items():
-            messagebox.showwarning("แจ้งเตือน", "ตะกร้าสินค้าว่างเปล่า")
+        """เปิดหน้าต่างดำเนินการสั่งซื้อ โดยคัดไปเฉพาะรายการที่ติ๊กเลือก"""
+        selected_items = []
+        
+        # กรองเฉพาะสินค้าที่ถูกติ๊ก ☑
+        for row in self.cart_tree.get_children():
+            values = self.cart_tree.item(row, "values")
+            if values[0] == "☑":
+                item_id = values[1]
+                for item in self.cart_manager.get_all_items():
+                    if str(item['id']) == str(item_id):
+                        selected_items.append(item)
+                        break
+
+        if not selected_items:
+            messagebox.showwarning("แจ้งเตือน", "กรุณาเลือกสินค้าเพื่อชำระเงินอย่างน้อย")
             return
+            
+        # สร้างคลาสจำลองสำหรับหน้า Checkout โดยเฉพาะ เพื่อไม่ให้โค้ดเก่าพัง
+        class TempCartManager:
+            def get_all_items(self):
+                return selected_items
+            def calculate_total(self):
+                return sum(item['price'] * item['qty'] for item in selected_items)
+                
+        temp_cart = TempCartManager()
         
         def on_checkout_success():
-            """ฟังก์ชัน Callback: ใช้สั่งรีเฟรชตะกร้าและหน้าแรกพร้อมกันหลังการจ่ายเงินสำเร็จ"""
+            """ลบเฉพาะรายการที่จ่ายเงินสำเร็จออกจากตะกร้าหลัก"""
+            for item in selected_items:
+                self.cart_manager.remove_item(item['id'])
             self.refresh_cart_display()
-            self.load_books_to_home() # อัปเดตสต็อกที่หน้าแรกทันที
+            self.load_books_to_home()
             
-        # เปิด UI สำหรับการชำระเงิน
-        CheckoutWindow(self.root, self.cart_manager, on_checkout_success)
+        # ส่ง temp_cart (ที่มีเฉพาะของที่ติ๊กเลือก) ไปยังหน้าต่างชำระเงิน
+        CheckoutWindow(self.root, temp_cart, on_checkout_success)

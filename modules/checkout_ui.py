@@ -13,15 +13,14 @@ class CheckoutWindow:
     def __init__(self, parent, cart_manager, refresh_callback):
         """
         กำหนดค่าเริ่มต้นของหน้าต่างการสั่งซื้อ
-        
         Args:
             parent (tk.Tk/tk.Frame): หน้าต่างหลักที่เรียกใช้งาน
             cart_manager (CartManager): อ็อบเจกต์จัดการตะกร้าเพื่อดึงราคารวม
             refresh_callback (function): ฟังก์ชันสำหรับรีเฟรช UI หลังสั่งซื้อสำเร็จ
         """
         self.top = tk.Toplevel(parent)
-        self.top.title("รายละเอียดการจัดส่งและการชำระเงิน")
-        self.top.geometry("600x400")
+        self.top.title("ข้อมูลการจัดส่ง")
+        self.top.geometry("600x450") 
         
         # ล็อกให้ผู้ใช้ต้องทำรายการหน้าต่างนี้ให้เสร็จก่อนกลับไปหน้าหลัก
         self.top.grab_set() 
@@ -37,21 +36,36 @@ class CheckoutWindow:
         frame_address = tk.LabelFrame(self.top, text="ที่อยู่จัดส่ง", padx=10, pady=10)
         frame_address.pack(fill="x", padx=10, pady=5)
 
-        tk.Label(frame_address, text="ชื่อ-นามสกุล:").grid(row=0, column=0, sticky="w", pady=2)
+        # แถว 0: เพศ (Radio Buttons) ย้ายขึ้นมาไว้บนสุด
+        tk.Label(frame_address, text="เพศ:").grid(row=0, column=0, sticky="w", pady=2)
+        
+        self.gender_var = tk.StringVar(value="ชาย")
+        frame_gender = tk.Frame(frame_address)
+        frame_gender.grid(row=0, column=1, columnspan=3, sticky="w", pady=2)
+        
+        tk.Radiobutton(frame_gender, text="ชาย", variable=self.gender_var, value="ชาย").pack(side="left", padx=(0, 10))
+        tk.Radiobutton(frame_gender, text="หญิง", variable=self.gender_var, value="หญิง").pack(side="left", padx=(0, 10))
+        tk.Radiobutton(frame_gender, text="อื่นๆ", variable=self.gender_var, value="อื่นๆ").pack(side="left")
+
+        # แถว 1: ชื่อ-นามสกุล (ย้ายลงมา)
+        tk.Label(frame_address, text="ชื่อ-นามสกุล:").grid(row=1, column=0, sticky="w", pady=2)
         self.ent_name = tk.Entry(frame_address, width=40)
-        self.ent_name.grid(row=0, column=1, columnspan=3, sticky="w", pady=2)
+        self.ent_name.grid(row=1, column=1, columnspan=3, sticky="w", pady=2)
 
-        tk.Label(frame_address, text="ที่อยู่ (บ้านเลขที่, ซอย, ถนน):").grid(row=1, column=0, sticky="w", pady=2)
-        self.ent_address = tk.Entry(frame_address, width=60)
-        self.ent_address.grid(row=1, column=1, columnspan=3, sticky="w", pady=2)
+        # แถว 2: ที่อยู่
+        tk.Label(frame_address, text="ที่อยู่ (บ้านเลขที่, ซอย, ถนน):").grid(row=2, column=0, sticky="nw", pady=2)
+        self.txt_address = tk.Text(frame_address, width=40, height=4)
+        self.txt_address.grid(row=2, column=1, columnspan=3, sticky="w", pady=2)
 
-        tk.Label(frame_address, text="จังหวัด:").grid(row=2, column=0, sticky="w", pady=2)
+        # แถว 3: จังหวัด
+        tk.Label(frame_address, text="จังหวัด:").grid(row=3, column=0, sticky="w", pady=2)
         self.ent_province = tk.Entry(frame_address, width=20)
-        self.ent_province.grid(row=2, column=1, sticky="w", pady=2)
+        self.ent_province.grid(row=3, column=1, sticky="w", pady=2)
 
-        tk.Label(frame_address, text="รหัสไปรษณีย์:").grid(row=2, column=2, sticky="e", pady=2, padx=5)
-        self.ent_zip = tk.Entry(frame_address, width=15)
-        self.ent_zip.grid(row=2, column=3, sticky="w", pady=2)
+        # แถว 4: รหัสไปรษณีย์
+        tk.Label(frame_address, text="รหัสไปรษณีย์:").grid(row=4, column=0, sticky="w", pady=2)
+        self.ent_zip = tk.Entry(frame_address, width=20)
+        self.ent_zip.grid(row=4, column=1, sticky="w", pady=2)
 
         # --- ส่วนสรุปยอด ---
         frame_summary = tk.Frame(self.top, padx=10, pady=10)
@@ -74,7 +88,8 @@ class CheckoutWindow:
         รวมถึงสั่งเคลียร์ตะกร้าเมื่อการสั่งซื้อเสร็จสมบูรณ์
         """
         name = self.ent_name.get().strip()
-        address = self.ent_address.get().strip()
+        gender = self.gender_var.get() # ดึงค่าเพศจาก Radio Button
+        address = self.txt_address.get("1.0", tk.END).strip()
         province = self.ent_province.get().strip()
         
         # ตรวจสอบการกรอกข้อมูลขั้นต่ำ
@@ -83,15 +98,22 @@ class CheckoutWindow:
             return
 
         # รวบรวมข้อมูลลูกค้าเป็นสตริงเดียว
-        customer_info = f"ชื่อ: {name}, ที่อยู่: {address}, จังหวัด: {province}, ปณ: {self.ent_zip.get()}"
+        customer_info = f"เพศ: {gender}, ชื่อ: {name}, ที่อยู่: {address}, จังหวัด: {province}, ปณ: {self.ent_zip.get()}"
         total = self.cart_manager.calculate_total()
+        
+        # ดึงสินค้าในตะกร้า
         cart_items = self.cart_manager.get_all_items()
 
         # บันทึกลงฐานข้อมูลและจัดการตัดสต็อก
         success, msg = controller.save_order(total, customer_info, cart_items)
         if success:
             messagebox.showinfo("สำเร็จ", msg)
-            self.cart_manager.clear_cart()
+            
+            try:
+                self.cart_manager.clear_cart()
+            except AttributeError:
+                pass
+                
             self.refresh_callback() # อัปเดต UI หน้าหลักผ่าน Callback
             self.top.destroy()      # ปิดหน้าต่าง Checkout
         else:
